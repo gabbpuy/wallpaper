@@ -1,0 +1,34 @@
+{
+    "global_config": {
+        "blending": false,
+        "blend_ratio": 0.4,
+        "crop": false,
+        "fill": false,
+        "gradient": false,
+        "pre_rotate": false,
+        "fill_mode": "swatch",
+        "stop_threshold": 48,
+        "spanning": false,
+        "single_folder_mode": true,
+        "reset_collage_folder": false,
+        "stack_mode": true,
+        "directories": [
+            "+S:\\Pictures\\Random"
+        ],
+        "desktop_filters": [
+        ],
+        "image_filters": [
+            "border"
+        ],
+        "background_filters": [
+            "fadetogrey"
+        ]
+    },
+    "monitors": {
+        "1" : {
+            "background_filters": [
+                "sepia"
+            ]
+        }
+    }
+}

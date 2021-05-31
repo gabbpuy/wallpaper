@@ -1,0 +1,2 @@
+Pillow~=8.2.0
+pywin32~=301; sys_platform=='win32'
