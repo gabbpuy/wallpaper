@@ -54,19 +54,33 @@ These are mostly ignored in favour of the json configuration
 Every item can be defaulted in the `global_config` section and repeated with different settings in the `monitors` section
 
 **blending** If `true` blends each new wallpaper to the previous
+
 **blend_ratio** The amount of blending to use
+
 **crop** Just chop off wallpapers that are too large
+
 **fill** Expand wallpapers to fill the available space
+
 **gradient** Generate a gradient (useful for blending to)
+
 **pre_rotate** If true rotate images based on the aspect ratio of the space being filled
+
 **fill_mode** There are different methods of filling the screen, `swatch`, `spiral` and `strip`
+
 **stop_threshold** Once image dimensions become smaller than this, stop
+
 **spanning** If `true` treat the entire screen space as a single monitor
+
 **single_folder_mode** If `true` fill a space as much as possible from the chosen folder - otherwise choose images at random from anywhere
+
 **stack_mode** If `true` blur the current background and layer the new wallpaper over the top by leaving gaps
+
 **directories** List of directories to look for images - prefix path with a `+` to recurse all subdirectories
+
 **desktop_filters** List of filters to apply to the desktop once rendered
+
 **image_filters** List of filters to apply to each individual image
+
 **background_filters** List of filters to apply to the background once blurred
 
 **monitors** A section with overrides from above keyed by the monitor number starting at `1`
