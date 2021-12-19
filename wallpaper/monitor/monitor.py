@@ -249,7 +249,7 @@ class Monitor:
         regions = root - region
         swatches = [Rect(Point(x, y), Size(first_w, first_h))]
         regions = [(-r.area, r) for r in regions
-                   if r.w >= self.config.stop_threshold * 1.5 and r.h >= self.config.stop_threshold * 1.5]
+                   if r.w >= self.config.stop_threshold * 4 and r.h >= self.config.stop_threshold * 4]
         heapq.heapify(regions)
         count = 0
         while regions and count < max_regions:

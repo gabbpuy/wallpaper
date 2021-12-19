@@ -1,3 +1,3 @@
-Pillow >= 8.2.0
+Pillow >= 8.3.2
 pywin32 >= 301 ; sys_platform == 'win32'
-pyinstaller >= 4.3 ; sys_platform == 'win32'
+pyinstaller >= 4.5.1 ; sys_platform == 'win32'

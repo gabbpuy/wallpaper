@@ -51,9 +51,9 @@ class Wallpaper:
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG, filename='wallpaper.log')
     pil_logger = logging.getLogger('PIL')
     pil_logger.setLevel(logging.INFO)
-
+    logging.info('Starting')
     d = Wallpaper()
     d.go()

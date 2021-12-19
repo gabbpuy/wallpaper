@@ -1,34 +1,36 @@
-import ArgImagePlugin
-import BmpImagePlugin
-import CurImagePlugin
-import DcxImagePlugin
-import EpsImagePlugin
-import FliImagePlugin
-import FpxImagePlugin
-import GbrImagePlugin
-import GifImagePlugin
-import IcoImagePlugin
-import ImImagePlugin
-import ImtImagePlugin
-import IptcImagePlugin
-import JpegImagePlugin
-import McIdasImagePlugin
-import MicImagePlugin
-import MpegImagePlugin
-import MspImagePlugin
-import PalmImagePlugin
-import PcdImagePlugin
-import PcxImagePlugin
-import PdfImagePlugin
-import PixarImagePlugin
-import PngImagePlugin
-import PpmImagePlugin
-import PsdImagePlugin
-import SgiImagePlugin
-import SunImagePlugin
-import TgaImagePlugin
-import TiffImagePlugin
-import WmfImagePlugin
-import XVThumbImagePlugin
-import XbmImagePlugin
-import XpmImagePlugin
+"""
+from PIL import ArgImagePlugin
+from PIL import BmpImagePlugin
+from PIL import CurImagePlugin
+from PIL import DcxImagePlugin
+from PIL import EpsImagePlugin
+from PIL import FliImagePlugin
+from PIL import FpxImagePlugin
+from PIL import GbrImagePlugin
+from PIL import GifImagePlugin
+from PIL import IcoImagePlugin
+from PIL import ImImagePlugin
+from PIL import ImtImagePlugin
+from PIL import IptcImagePlugin
+from PIL import JpegImagePlugin
+from PIL import McIdasImagePlugin
+from PIL import MicImagePlugin
+from PIL import MpegImagePlugin
+from PIL import MspImagePlugin
+from PIL import PalmImagePlugin
+from PIL import PcdImagePlugin
+from PIL import PcxImagePlugin
+from PIL import PdfImagePlugin
+from PIL import PixarImagePlugin
+from PIL import PngImagePlugin
+from PIL import PpmImagePlugin
+from PIL import PsdImagePlugin
+from PIL import SgiImagePlugin
+from PIL import SunImagePlugin
+from PIL import TgaImagePlugin
+from PIL import TiffImagePlugin
+from PIL import WmfImagePlugin
+from PIL import XVThumbImagePlugin
+from PIL import XbmImagePlugin
+from PIL import XpmImagePlugin
+"""
