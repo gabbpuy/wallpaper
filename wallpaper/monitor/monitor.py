@@ -137,6 +137,9 @@ class Monitor:
             if self.config.stack_mode and random.random() < 0.33:
                 return
 
+            if any(s < self.config.stop_threshold for s in size):
+                return
+
             try:
                 image = image.convert("RGBA").resize(size, sizer)
             except Exception:
@@ -144,9 +147,8 @@ class Monitor:
                 return
 
             for image_filter in self.config.image_filters:
-                logger.info('filter size 1: %s', image.size)
+                logger.info('Filter: %s', image_filter)
                 image = WallpaperFilter.get_filter(image_filter)(image, self, position)
-                logger.info('filter size 2: %s', image.size)
 
             if self.config.shadow_mode:
                 # image = shadow(image, self.bg_image, position)
@@ -158,9 +160,7 @@ class Monitor:
                 box = (x, y, x + w, y + h)
                 img1 = self.bg_image.crop(box)
                 image = Image.blend(img1, image, self.config.blend_ratio)
-
             self.bg_image.paste(image, tuple(position), mask=image)
-            del image
         except:
             logger.exception('put_image_at: %s', (image, position, size, sizer))
 
@@ -376,11 +376,8 @@ class Monitor:
             # work around random
             self.dirs += self.dirs
 
-        last_pos = image = last_size = None
         building = True
         while building:
-            last_size = rect.size
-            last_pos = rect.top_left
             image = self.get_collage_image(rect)
             self.image_list.add(image.info['filename'])
             position, size, sizer = self.place_image(image, rect)
@@ -389,11 +386,6 @@ class Monitor:
                         (rect.size.height > stop_threshold))
             if building:
                 self.__workers.submit(self.put_image_at, *region)
-
-        if self.size.width > 0 or self.size.height > 0:
-            scale, new_size = self._get_max_size(image, last_size)
-            region = (image, last_pos, new_size, Image.ANTIALIAS)
-            self.__workers.submit(self.put_image_at, *region)
 
     def generate_wallpaper(self, fill_modes: tuple = ('strip', 'spiral', 'swatch')):
         stack_mode = self.config.stack_mode
@@ -410,10 +402,8 @@ class Monitor:
                     this.__bg_image.paste(img, (self.physical.left, self.physical.top))
                 except KeyError:
                     pass
-
             self.__workers.submit(_blurBack, self)
         try:
-
             if fill_mode in fill_modes:
                 self.build_strips()
                 return
@@ -528,4 +518,3 @@ class Monitor:
 
         region = (wallpaper, position, size, sizer)
         self.__workers.submit(self.put_image_at, *region)
-        self.wait_for_workers()

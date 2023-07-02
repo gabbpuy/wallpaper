@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+from typing import Optional
+
 from PIL import Image
 from .wallpaper_filter import WallpaperFilter
 from ..geom.point import Point
 
 
 class Sepia(WallpaperFilter):
-    def _filter(self, image: Image.Image, _monitor: 'Monitor', _position: Point) -> Image.Image:
+    def _filter(self, image: Image.Image, _monitor: Optional['Monitor'], _position: Point) -> Image.Image:
         width, height = image.size
 
         pixels = image.load()

@@ -41,9 +41,9 @@ class WindowsDesktop(Desktop):
         """
         Set the wallpaper for a single monitor
         """
-        k = winreg.OpenKeyEx(winreg.HKEY_CURRENT_USER, r"Control Panel\Desktop", 0, winreg.KEY_WRITE)
-        winreg.SetValue(k, "WallpaperStyle", winreg.REG_SZ, "0")
-        winreg.SetValue(k, "TileWallpaper", winreg.REG_SZ, "0")
+        k = winreg.OpenKeyEx(winreg.HKEY_CURRENT_USER, r'Control Panel\Desktop', 0, winreg.KEY_WRITE)
+        winreg.SetValue(k, 'WallpaperStyle', winreg.REG_SZ, '0')
+        winreg.SetValue(k, 'TileWallpaper', winreg.REG_SZ, '0')
 
     @staticmethod
     def set_wallpaper_style_multi():
@@ -51,13 +51,13 @@ class WindowsDesktop(Desktop):
         Set the wallpaper for multiple monitor configuration
         """
         # To set a multi-monitor wallpaper, we need to tile it...
-        k = winreg.OpenKeyEx(winreg.HKEY_CURRENT_USER, r"Control Panel\Desktop", 0, winreg.KEY_WRITE)
-        winreg.SetValue(k, "WallpaperStyle", winreg.REG_SZ, "0")
-        winreg.SetValue(k, "TileWallpaper", winreg.REG_SZ, "1")
+        k = winreg.OpenKeyEx(winreg.HKEY_CURRENT_USER, r'Control Panel\Desktop', 0, winreg.KEY_WRITE)
+        winreg.SetValue(k, 'WallpaperStyle', winreg.REG_SZ, '0')
+        winreg.SetValue(k, 'TileWallpaper', winreg.REG_SZ, '1')
 
     @staticmethod
     def set_windows_permissions(filename):
-        everyone, _domain, _type = win32security.LookupAccountName("", "Everyone")
+        everyone, _domain, _type = win32security.LookupAccountName('', 'Everyone')
         dacl = win32security.ACL()
         dacl.AddAccessAllowedAce(win32security.ACL_REVISION,
                                  con.FILE_ALL_ACCESS, everyone)
@@ -67,8 +67,8 @@ class WindowsDesktop(Desktop):
 
         sd.SetSecurityDescriptorDacl(1, dacl, 0)
 
-    @staticmethod
-    def set_wallpaper_from_image(path_to_image):
+
+    def set_wallpaper_from_image(self, path_to_image):
 
         """
         Given a path to a bmp, set it as the wallpaper
@@ -81,7 +81,7 @@ class WindowsDesktop(Desktop):
             path_to_image,
             SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE)
         if not result:
-            raise Exception("Unable to set wallpaper.")
+            raise Exception('Unable to set wallpaper.')
 
     def set_wallpaper(self):
         """
@@ -92,7 +92,7 @@ class WindowsDesktop(Desktop):
         # Save the new wallpaper in our current directory.
         new_path = os.getcwd()
         new_path = os.path.join(new_path, 'pywallpaper.jpg')
-        self.bg_image.convert('RGB').save(new_path, "JPEG", quality=90)
+        self.bg_image.convert('RGB').save(new_path, 'JPEG', quality=90)
         self.set_wallpaper_from_image(new_path)
 
     def set_wallpaper_style(self):

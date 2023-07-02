@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 import logging
+from typing import Union, Optional
 
 from PIL import Image
 
@@ -29,14 +31,14 @@ class WallpaperFilter(metaclass=ABCMeta):
         return list(WallpaperFilter.Filters.keys())
 
     @staticmethod
-    def get_filter(filter_name: str) -> 'WallpaperFilter':
+    def get_filter(filter_name: str) -> WallpaperFilter:
         return WallpaperFilter.Filters.get(filter_name, DummyFilter())
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         WallpaperFilter.register(cls)
 
-    def __call__(self, image: Image, monitor: 'Monitor', position: Point) -> Image:
+    def __call__(self, image: Image, monitor: Optional['Monitor'], position: Union[Point, tuple]) -> Image:
         """
         Express the filter
 

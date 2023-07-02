@@ -72,7 +72,7 @@ class Rect:
     def __lt__(self, other: 'Rect'):
         """
         We keep a priority queue of rects for some things but if two areas are equal we need a comparison for
-        rectangles. Order by distance to (0, 0) its as good as any.
+        rectangles. Order by distance to (0, 0) it's as good as any.
         :param other:
         :return:
         """

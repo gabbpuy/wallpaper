@@ -73,7 +73,7 @@ class SQL_ImageHistory:
         cursor = db.cursor()
         if self.newWalls and not self.count:
             cursor.executemany(
-                "INSERT INTO DIR_ENTRIES(directory, filename, last_used) VALUES (?, ?, strftime('%s', 'now'))",
+                "INSERT INTO dir_entries(directory, filename, last_used) VALUES (?, ?, strftime('%s', 'now'))",
                 [os.path.split(wall) for wall in self.newWalls]
             )
             db.commit()

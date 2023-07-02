@@ -8,7 +8,7 @@ ElevatedArg = "_OK_"
 
 def _elevate_self():
     """
-    Gain (prompt) for Administrator priveleges
+    Gain (prompt) for Administrator privileges
     """
     if hasattr(sys, "frozen"):
         args = ['"{0}"'.format(a) for a in sys.argv[1:]]

@@ -44,7 +44,7 @@ class Desktop:
         logger.info('Desktop Filters: %s', self.config.desktop_filters)
 
         for image_filter in self.config.desktop_filters:
-            self.bg_image = WallpaperFilter.get_filter(image_filter)(self.bg_image)
+            self.bg_image = WallpaperFilter.get_filter(image_filter)(self.bg_image, None, (0,0))
 
     def calc_wallpaper_size(self) -> Size:
         """

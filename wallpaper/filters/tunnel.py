@@ -20,11 +20,13 @@ class Tunnel(WallpaperFilter):
         m_centre = self._centroid(monitor.size)
         i_centre = (Point(*position) + self._centroid(Size(*image.size)))
 
-        angle = (math.degrees(-math.atan2(m_centre.y - i_centre.y, m_centre.x - i_centre.x)))
-        if angle > 90:
-            angle = 180 - angle
-        if angle < -90:
-            angle = 180 + angle
+        angle = -(math.degrees(math.atan2(i_centre.y - m_centre.y, i_centre.x - m_centre.x)))
+
+        if not -90 <= angle <= 90:
+            if 90 < angle <= 180:
+                angle -= 180
+            elif -180 <= angle < -90:
+                angle += 180
 
         logger.info('P1: %s, P2:%s, Angle: %s', m_centre, i_centre, angle)
 

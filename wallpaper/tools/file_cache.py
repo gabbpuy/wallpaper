@@ -41,33 +41,43 @@ class SQL_Cache(_Cache):
         self.dir_cache = {}
         self.history = ImageHistory()
         self.changed = False
-        if not osPath.exists('dircache.db'):
-            db = sqlite3.connect('dircache.db')
-            cursor = db.cursor()
-            cursor.executescript(
-                """
-                CREATE TABLE dir_entries (
-                    directory TEXT NOT NULL,
-                    file TEXT NOT NULL,
-                    modified_time REAL NOT NULL 
-                );
-                CREATE INDEX dir_path ON dir_entries(directory);
-                """
-            )
-            db.close()
         self.queue_thread = threading.Thread(target=self._set_db)
         self.queue_thread.start()
-        # self.count()
+        self._create_cache_db()
+
+    def _create_cache_db(self):
+        dircache_db = 'dircache.db'
+        if not osPath.exists(dircache_db):
+            self._create_cache_table()
+
+    def _create_cache_table(self):
+        db = self._db()
+        cursor = db.cursor()
+        cursor.executescript(
+            """
+            CREATE TABLE dir_entries (
+                directory TEXT NOT NULL,
+                file TEXT NOT NULL,
+                modified_time REAL NOT NULL 
+            );
+            CREATE INDEX dir_path ON dir_entries(directory);
+            """
+        )
+        db.commit()
+        db.close()
+
+    def _db(self) -> sqlite3.Connection:
+        return sqlite3.connect(self.dircache_db)
 
     def count(self):
-        db = sqlite3.connect('dircache.db')
+        db = self._db()
         cursor = db.cursor()
         cursor.execute('SELECT COUNT(*) FROM dir_entries')
         logging.error("Cache Entries: %d", cursor.fetchone()[0])
 
     def get(self, path):
         if path not in self.dir_cache:
-            db = sqlite3.connect('dircache.db')
+            db = self._db()
             cursor = db.cursor()
             cursor.execute('SELECT path, modified_time FROM dir_entries WHERE path = ?', (path,))
             try:
@@ -88,9 +98,8 @@ class SQL_Cache(_Cache):
             return path
         return self.set(path, files)
 
-    @staticmethod
-    def _set_db():
-        db = sqlite3.connect('dircache.db')
+    def _set_db(self):
+        db = self._db()
         while True:
             entry = SQL_Cache.CacheQueue.get()
             if entry is None:
@@ -159,7 +168,8 @@ class NullCache(_Cache):
 
     @locked(CacheLock)
     def set(self, path, files):
-        self.directory_cache[path] = DirEntry(path, files)
+        # self.directory_cache[path] = DirEntry(path, files)
+        self.directory_cache[path] = DirEntry(path, None)
         return path
 
     def update(self, path, files=None, stat=os.stat):

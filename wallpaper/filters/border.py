@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import Optional
+
 from PIL import Image, ImageDraw
 from .wallpaper_filter import WallpaperFilter
 from ..geom.point import Point
@@ -9,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class Border(WallpaperFilter):
-    def _filter(self, image: Image.Image, _monitor: 'Monitor', _position: Point) -> Image.Image:
+    def _filter(self, image: Image.Image, _monitor: Optional['Monitor'], _position: Point) -> Image.Image:
         if has_transparency(image):
             return image
         draw = ImageDraw.Draw(image)
