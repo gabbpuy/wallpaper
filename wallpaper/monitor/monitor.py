@@ -336,9 +336,9 @@ class Monitor:
         else:
             size.height = dY
 
-        rs_filter = Image.BICUBIC
+        rs_filter = Image.Resampling.BICUBIC
         if scale < 1.0:
-            rs_filter = Image.ANTIALIAS
+            rs_filter = Image.Resampling.LANCZOS
 
         rect.top_left = pos
 
@@ -392,7 +392,7 @@ class Monitor:
 
         if self.size.width > 0 or self.size.height > 0:
             scale, new_size = self._get_max_size(image, last_size)
-            region = (image, last_pos, new_size, Image.ANTIALIAS)
+            region = (image, last_pos, new_size, Image.Resampling.LANCZOS)
             self.__workers.submit(self.put_image_at, *region)
 
     def generate_wallpaper(self, fill_modes: tuple = ('strip', 'spiral', 'swatch')):
@@ -406,10 +406,10 @@ class Monitor:
                     BLUR = 5
                     img = this.__bg_image.crop(this.physical).convert('RGBA').filter(ImageFilter.GaussianBlur(BLUR))
                     for bg_filter in this.config.background_filters:
-                        img = WallpaperFilter.get_filter(bg_filter)(img, self, (0, 0))
+                        img = WallpaperFilter.get_filter(bg_filter)(img, self, Point(0, 0))
                     this.__bg_image.paste(img, (self.physical.left, self.physical.top))
-                except KeyError:
-                    pass
+                except:
+                    logger.exception('Background filters')
 
             self.__workers.submit(_blurBack, self)
         try:
@@ -432,6 +432,7 @@ class Monitor:
             self.wait_for_workers()
             if stack_mode:
                 self.__bg_image.paste(self.bg_image, (self.physical.left, self.physical.top), mask=self.bg_image)
+                self.bg_image = self.__bg_image
             flush_walls()
 
     def set_wallpaper_from_directory(self, path: str) -> bool:
@@ -521,7 +522,7 @@ class Monitor:
 
         if self.config.pre_rotate:
             if wallpaper.size[0] < wallpaper.size[1]:
-                wallpaper = wallpaper.rotate(90, Image.BICUBIC, expand=True)
+                wallpaper = wallpaper.rotate(90, Image.Resampling.BICUBIC, expand=True)
 
         position, size, sizer = self.place_image(wallpaper, Rect(Point(0, 0), self.size))
         position = self.centre_image(size)
