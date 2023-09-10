@@ -3,8 +3,12 @@ from argparse import ArgumentParser
 import logging
 import os
 import random
+import sys
 
-from wallpaper.desktop.windows_desktop import WindowsDesktop as Desktop
+if sys.platform == 'darwin':
+    from wallpaper.desktop.osx_desktop import OSX_Desktop as Desktop
+else:
+    from wallpaper.desktop.windows_desktop import WindowsDesktop as Desktop
 from wallpaper.config import WallpaperConfig
 
 
@@ -18,7 +22,7 @@ class Wallpaper:
         random.seed()
 
     def get_config_file_options(self, options):
-        config_file = 'pywallpaper.json'
+        config_file = 'pywallpaper_osx.json'
         if options.config_file:
             config_file = options.config_file
         self.config = WallpaperConfig()

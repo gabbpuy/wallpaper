@@ -122,7 +122,6 @@ class Desktop:
         monitors = self.monitors if not self.config.spanning else [self._master_monitor, ]
         with ThreadPoolExecutor() as executor:
             for m in monitors:
-                logging.debug(m)
                 m.set_monitor_config(self.wallpaper_config.monitors.get(str(m.monitor_number), self.config))
                 m.set_bg_image(self.bg_image)
                 executor.submit(m.generate_wallpaper)
