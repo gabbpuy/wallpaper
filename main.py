@@ -22,7 +22,7 @@ class Wallpaper:
         random.seed()
 
     def get_config_file_options(self, options):
-        config_file = 'pywallpaper_osx.json'
+        config_file = 'pywallpaper.json'
         if options.config_file:
             config_file = options.config_file
         self.config = WallpaperConfig()
