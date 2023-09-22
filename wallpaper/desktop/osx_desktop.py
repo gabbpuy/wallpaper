@@ -28,11 +28,13 @@ class OSX_Desktop(Desktop):
         path = self._root_path
         if not path.exists() or not list(path.glob('*_[0-9].jpg')):
             path.mkdir(exist_ok=True)
-            monitors = self.monitors
-            for i, monitor in enumerate(monitors):
-                # Make blank placeholder images
+        monitors = self.monitors
+        for i, monitor in enumerate(monitors):
+            # Make blank placeholder images
+            image_path = (path / f'pywallpaper_{i}.jpg')
+            if not image_path.exists():
                 img = Image.new('RGB', tuple(monitor.size))
-                img.save((path / f'pywallpaper_{i}.jpg'))
+                img.save(image_path)
                 img.close()
 
     def generate_wallpaper(self):

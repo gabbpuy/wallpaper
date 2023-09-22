@@ -23,10 +23,17 @@ def get_monitors(*_args, **_kwargs):
     screens = NSScreen.screens()
     monitors = []
     for i, screen in enumerate(screens):
+        left, top, right, bottom = NS_Rect_to_monitor_rect(screen.frame())
+        right -= left
+        left = 0
+        bottom -= top
+        top = 0
+        physical = MonitorRect(left, top, right, bottom)
+
         monitors.append(
             Monitor(
                 screen.localizedName(),
-                NS_Rect_to_monitor_rect(screen.frame()),
+                physical,
                 NS_Rect_to_monitor_rect(screen.visibleFrame()),
                 i == 0,
                 i
