@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from argparse import ArgumentParser
 import logging
+import pathlib
 import os
 import random
 import sys
@@ -43,9 +44,12 @@ class Wallpaper:
 
     def go(self):
         options = self.get_command_line_options()
-        if options.cwd:
-            if options.cwd != '.':
-                os.chdir(options.cwd)
+        if options.cwd and options.cwd != '.':
+            os.chdir(options.cwd)
+        elif sys.platform == 'darwin':
+            if os.getcwd() == '/':
+                os.chdir(pathlib.Path(sys.argv[0]).parent)
+                logging.info('Starting: %s', os.getcwd())
         self.get_config_file_options(options)
         desktop = Desktop(self.config)
         if options.single_image:
@@ -55,9 +59,9 @@ class Wallpaper:
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG, filename='wallpaper.log')
+    logging.basicConfig(level=logging.DEBUG, filename='/tmp/wallpaper.log')
     pil_logger = logging.getLogger('PIL')
-    pil_logger.setLevel(logging.INFO)
-    logging.info('Starting')
+    pil_logger.setLevel(logging.ERROR)
+    logging.info('Starting: %s', os.getcwd())
     d = Wallpaper()
     d.go()
