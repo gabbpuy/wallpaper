@@ -1,3 +1,4 @@
+import os
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
@@ -5,7 +6,7 @@ import logging
 import pathlib
 import shutil
 
-from AppKit import NSScreen, NSRect, NSURL, NSWorkspace
+from AppKit import NSScreen, NSRect, NSURL, NSWorkspace, NSImageScaling, NSWorkspaceDesktopImageOptionKey
 from PIL import Image
 
 from wallpaper.monitor.monitor_rect import MonitorRect
@@ -32,10 +33,13 @@ class OSX_Desktop(Desktop):
         for i, monitor in enumerate(monitors):
             # Make blank placeholder images
             image_path = (path / f'pywallpaper_{i}.jpg')
-            if not image_path.exists():
-                img = Image.new('RGB', tuple(monitor.size))
-                img.save(image_path)
-                img.close()
+            img = Image.new('RGB', tuple(monitor.size))
+            if image_path.exists():
+                # Paste existing images to blank image, in case monitor size is different.
+                existing = Image.open(str(image_path))
+                img.paste(existing, (0, 0))
+            img.save(image_path)
+            img.close()
 
     def generate_wallpaper(self):
         self._load_wallpapers()
@@ -57,18 +61,21 @@ class OSX_Desktop(Desktop):
             wallpaper_path = (self._root_path / f'pywallpaper_{i}.jpg')
             wallpaper.convert('RGB').save(wallpaper_path)
             wallpaper.close()
+
             # OSX doesn't reload the desktop if the filename doesn't change...
             # So make a temporary name and set it then set it again with the name we want.
             temp_name = self._root_path / f'{str(uuid.uuid4())}.jpg'
-            shutil.move(wallpaper_path, temp_name)
+            try:
+                original = os.readlink(wallpaper_path)
+                shutil.move(original, temp_name)
+                os.unlink(wallpaper_path)
+            except OSError:
+                shutil.move(wallpaper_path, temp_name)
+
             url = NSURL.fileURLWithPath_(str(temp_name))
             logger.info('wallpaper url: %s', url)
-            (result, error) = NSWorkspace.sharedWorkspace().setDesktopImageURL_forScreen_options_error_(url, screen, {},
+            options = {NSWorkspaceDesktopImageOptionKey: 2}
+            (result, error) = NSWorkspace.sharedWorkspace().setDesktopImageURL_forScreen_options_error_(url, screen, options,
                                                                                                         None)
-            # It needs a little time before the next call...
-            time.sleep(0.4)
-            shutil.move(temp_name, wallpaper_path)
-            url = NSURL.fileURLWithPath_(str(wallpaper_path))
-            (result, error) = NSWorkspace.sharedWorkspace().setDesktopImageURL_forScreen_options_error_(url, screen, {},
-                                                                                                        None)
+            os.symlink(temp_name, wallpaper_path)
             logger.info('Set it: %s, %s', result, error)
