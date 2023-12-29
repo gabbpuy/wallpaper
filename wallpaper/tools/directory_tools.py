@@ -30,10 +30,11 @@ def expand_dir_t(directory, newDirEntry):
     """
     dirM = collections.deque()
     append = dirM.append
+    extensions = Image.registered_extensions()
     try:
         for root, dirs, files in os.walk(directory):
             if files:
-                update(root, [os.path.join(root, f) for f in files])
+                update(root, [os.path.join(root, f) for f in files if os.path.splitext(f)[-1].lower() in extensions])
                 append(root)
         newDirEntry((directory, dirM))
     except:
