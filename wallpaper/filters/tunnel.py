@@ -3,34 +3,43 @@ import logging
 import math
 import random
 
-from PIL import Image, ImageDraw
+from PIL import Image
+
+from wallpaper.geom.point import Point
+from wallpaper.geom.size import Size
 from .wallpaper_filter import WallpaperFilter
-from ..geom.point import Point
-from ..geom.size import Size
 
 logger = logging.getLogger(__name__)
 
 
 class Tunnel(WallpaperFilter):
 
-    def _centroid(self, size) -> Point:
+    @staticmethod
+    def _centroid(size) -> Point:
         return Point(size.width // 2, size.height // 2)
 
     def _filter(self, image: Image.Image, monitor: 'Monitor', position: Point) -> Image.Image:
+        # Calculate center points
         m_centre = self._centroid(monitor.size)
-        i_centre = (Point(*position) + self._centroid(Size(*image.size)))
+        i_centre = Point(*position) + self._centroid(Size(*image.size))
 
-        angle = -(math.degrees(math.atan2(i_centre.y - m_centre.y, i_centre.x - m_centre.x)))
+        # Calculate the angle needed to align the vertical axis
+        angle = math.degrees(math.atan2(m_centre.x - i_centre.x, m_centre.y - i_centre.y))
 
-        if not -90 <= angle <= 90:
-            if 90 < angle <= 180:
-                angle -= 180
-            elif -180 <= angle < -90:
-                angle += 180
+        # Ensure image stays upright when it's below the monitor's horizontal center
+        if i_centre.y > m_centre.y:
+            # If image is below monitor center, adjust angle to keep it upright
+            if angle > 0:
+                angle = angle - 180
+            else:
+                angle = angle + 180
 
-        logger.info('P1: %s, P2:%s, Angle: %s', m_centre, i_centre, angle)
+        # Log the rotation information
+        logger.info('Monitor center: %s, Image center: %s, Rotation angle: %s degrees',
+                    m_centre, i_centre, angle)
 
-        image = image.rotate(angle, expand=1, fillcolor=(0, 0, 0, 0))
+        # Rotate the image
+        image = image.rotate(angle, expand=True, fillcolor=(0, 0, 0, 0))
         return image
 
 
@@ -38,5 +47,5 @@ class Jiggle(WallpaperFilter):
 
     def _filter(self, image: Image.Image, monitor: 'Monitor', position: Point) -> Image.Image:
         angle = 20 * random.random() - 10.0
-        image = image.rotate(angle, expand=1, fillcolor=(0, 0, 0, 0))
+        image = image.rotate(angle, expand=True, fillcolor=(0, 0, 0, 0))
         return image

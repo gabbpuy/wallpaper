@@ -1,5 +1,4 @@
 import os
-import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 import logging
@@ -9,10 +8,9 @@ import shutil
 from AppKit import NSScreen, NSRect, NSURL, NSWorkspace, NSImageScaling, NSWorkspaceDesktopImageOptionKey
 from PIL import Image
 
-from wallpaper.monitor.monitor_rect import MonitorRect
+from wallpaper.filters.wallpaper_filter import WallpaperFilter
 from .desktop import Desktop
-from ..filters.wallpaper_filter import WallpaperFilter
-from ..monitor import Monitor
+
 
 logger = logging.getLogger(__name__)
 

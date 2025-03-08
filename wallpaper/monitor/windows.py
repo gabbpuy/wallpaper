@@ -2,6 +2,7 @@
 import ctypes
 from ctypes import windll
 import logging
+from typing import Sequence
 
 from wallpaper.monitor.monitor_rect import MonitorRect
 from .monitor import Monitor
@@ -57,7 +58,7 @@ def find_monitors() -> list:
     return monitors
 
 
-def get_monitors(*_args, **_kwargs):
+def get_monitors(*_args, **_kwargs) -> Sequence[Monitor]:
     monitors = []
     for i, (hMonitor, extents) in enumerate(find_monitors()):
         logger.info('get_monitors() - %d: (%s, %s)', i, hMonitor, extents)

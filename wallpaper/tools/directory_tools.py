@@ -3,18 +3,20 @@ import collections
 import concurrent.futures
 import logging
 import os
-from random import randint
-from typing import Optional
+from random import randint, choice
+from typing import Callable
 
 from PIL import Image
 
 from .file_cache import DirectoryCache
 
+logger = logging.getLogger(__name__)
+
 osPath = os.path
 
 # For quick filtering
-FileCache: DirectoryCache = None
-update = None
+FileCache: DirectoryCache | None = None
+update: Callable | None = None
 
 
 def flush_walls():
@@ -41,40 +43,39 @@ def expand_dir_t(directory, newDirEntry):
         logging.exception('expand_dir_t')
 
 
-def expand_dirs(dirs):
-    """
-    Find all dirs, recurse down any path starting with '+'
+def choose_dir_lite(dirs) -> list:
+    extensions = Image.registered_extensions()
 
-    :param dirs: A list of dirs
-    """
+    chosen = choice(dirs)
+    if not chosen.startswith('+'):
+        return chosen
+
+    chosen = chosen[1:]
+
+    while True:
+        logger.info('Root Choice: %s', chosen)
+
+        root, dirs, files = next(os.walk(chosen))
+        if files:
+            if not dirs or randint(1, 100) < 50:
+                d = update(osPath.join(root, chosen),
+                           [osPath.join(root, f) for f in files if os.path.splitext(f)[-1].lower() in extensions])
+                return d
+        if dirs:
+            chosen = osPath.join(root, choice(dirs))
+        else:
+            break
+    return []
+
+def expand_dirs_lite(dirs):
     global FileCache, update
     if not FileCache:
         FileCache = DirectoryCache()
         update = FileCache.update
-    newDirs = (FileCache.update(d) for d in dirs if d[0] != '+' and osPath.exists(d))
-    newDirs = [(d, (d,)) for d in newDirs if d]
-    newDirEntry = newDirs.append
-    with concurrent.futures.ThreadPoolExecutor() as pool:
-        for path in (d[1:] for d in dirs if d[0] == '+' and osPath.exists(d[1:])):
-            pool.submit(expand_dir_t, path, newDirEntry)
-
-    FileCache.flush()
-    return newDirs
+    return dirs
 
 
-def choose_dir(dirs):
-    """
-    Choose a directory from a tree
-    """
-    nDirs = len(dirs)
-    dirs = dirs[randint(0, nDirs - 1)][1]
-    nDirs = len(dirs)
-    if nDirs:
-        path = dirs[randint(0, nDirs - 1)]
-        return path
-
-
-def get_new_image(directory: str, dont_want: set = None) -> Optional[Image.Image]:
+def get_new_image(directory: str, dont_want: set = None) -> Image.Image | None:
     """
     Get a new image from a directory
 
@@ -91,7 +92,6 @@ def get_new_image(directory: str, dont_want: set = None) -> Optional[Image.Image
                 cache.remove_walls(files)
                 dont_want.update(files)
                 available_files = cache.get_available(files, dont_want)
-
             tries = 0
             while tries < 3 and available_files:
                 idx = randint(0, len(available_files) - 1)

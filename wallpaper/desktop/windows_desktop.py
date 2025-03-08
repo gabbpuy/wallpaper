@@ -56,7 +56,7 @@ class WindowsDesktop(Desktop):
         winreg.SetValue(k, 'TileWallpaper', winreg.REG_SZ, '1')
 
     @staticmethod
-    def set_windows_permissions(filename):
+    def set_windows_permissions(filename: str):
         everyone, _domain, _type = win32security.LookupAccountName('', 'Everyone')
         dacl = win32security.ACL()
         dacl.AddAccessAllowedAce(win32security.ACL_REVISION,
@@ -68,7 +68,7 @@ class WindowsDesktop(Desktop):
         sd.SetSecurityDescriptorDacl(1, dacl, 0)
 
 
-    def set_wallpaper_from_image(self, path_to_image):
+    def set_wallpaper_from_image(self, path_to_image: str):
 
         """
         Given a path to a bmp, set it as the wallpaper

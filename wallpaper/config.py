@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import dataclasses
 import json
-from typing import Dict, Optional, List, IO
+from typing import IO
 
 
 class DataclassJSON_Encoder(json.JSONEncoder):
@@ -34,7 +34,7 @@ class MonitorConfig(DataclassIO):
     blend_ratio: float = 0.4
     crop: bool = False
     fill: bool = False
-    # collage, strip, spiral
+    # collage, strip, spiral, swatch
     fill_mode: str = 'spiral'
     gradient: bool = False
     pre_rotate: bool = False
@@ -44,16 +44,16 @@ class MonitorConfig(DataclassIO):
     spanning: bool = False
     stack_mode: bool = False
     stop_threshold: int = 32
-    directories: List[str] = dataclasses.field(default_factory=list)
-    desktop_filters: List[str] = dataclasses.field(default_factory=list)
-    image_filters: List[str] = dataclasses.field(default_factory=list)
-    background_filters: List[str] = dataclasses.field(default_factory=list)
+    directories: list[str] = dataclasses.field(default_factory=list)
+    desktop_filters: list[str] = dataclasses.field(default_factory=list)
+    image_filters: list[str] = dataclasses.field(default_factory=list)
+    background_filters: list[str] = dataclasses.field(default_factory=list)
 
 
 class WallpaperConfig:
     def __init__(self):
-        self.global_config: Optional[MonitorConfig] = MonitorConfig()
-        self.monitors: Dict[str] = {}
+        self.global_config: MonitorConfig | None = MonitorConfig()
+        self.monitors: dict[str, MonitorConfig] = {}
 
     def load(self, fp: IO):
         structure = json.load(fp)

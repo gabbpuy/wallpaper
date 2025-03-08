@@ -5,6 +5,7 @@ import os
 import sqlite3
 import threading
 import time
+from typing import Sequence
 
 from wallpaper.tools.decorators import locked
 
@@ -43,7 +44,7 @@ class SQL_ImageHistory:
                 db.close()
 
     @staticmethod
-    def load_walls():
+    def load_walls() -> set[str]:
         db = sqlite3.connect(DB_PATH)
         cursor = db.cursor()
         result = cursor.execute('SELECT directory, filename FROM dir_entries')
@@ -51,7 +52,7 @@ class SQL_ImageHistory:
             os.path.join(r[0], r[1]) for r in result.fetchall()
         }
 
-    def remove_walls(self, walls):
+    def remove_walls(self, walls: Sequence):
         self.priorWalls -= set(walls)
         path = os.path.dirname(walls[0])
         logging.info("DELETING :-) %s", path)
@@ -63,7 +64,7 @@ class SQL_ImageHistory:
         )
         db.commit()
 
-    def add_wall(self, wall):
+    def add_wall(self, wall: str):
         if wall not in self.priorWalls:
             self.newWalls.add(wall)
         self.priorWalls.add(wall)
@@ -78,7 +79,9 @@ class SQL_ImageHistory:
             )
             db.commit()
 
-    def get_available(self, files, dontWant=()):
+    def get_available(self, files: Sequence[str], dontWant=None):
+        if dontWant is None:
+            dontWant = set()
         return list(set(files) - self.priorWalls - dontWant)
 
     def bump(self):
@@ -107,14 +110,14 @@ class FileImageHistory:
         self.count = 0
 
     @staticmethod
-    def load_walls():
+    def load_walls() -> set[str]:
         if osPath.exists('priorWalls.txt'):
             with io.open('priorWalls.txt', 'rt', encoding='utf-8') as fp:
                 return set(f.strip() for f in fp)
         return set()
 
     @locked(CacheLock)
-    def add_wall(self, wall):
+    def add_wall(self, wall: str):
         self.needsWrite = True
         self.priorWalls.add(wall)
 
@@ -127,12 +130,14 @@ class FileImageHistory:
             self.needsWrite = False
 
     @locked(CacheLock)
-    def remove_walls(self, walls):
+    def remove_walls(self, walls: Sequence[str]):
         if walls:
             self.priorWalls -= set(walls)
             self.needsWrite = True
 
-    def get_available(self, files, dontWant=()):
+    def get_available(self, files: Sequence[str], dontWant=None):
+        if dontWant is None:
+            dontWant = set()
         return list(set(files) - self.priorWalls - dontWant)
 
     @locked(CacheLock)

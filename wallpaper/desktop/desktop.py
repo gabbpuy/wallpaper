@@ -29,7 +29,7 @@ class Desktop:
         self.config: MonitorConfig = config.global_config
 
         self.monitors = []
-        self.win_size = None
+        self.win_size: tuple[int, int] | None = None
 
         self.bg_colour = (0, 0, 0)
         self.bg_image = None
@@ -128,5 +128,5 @@ class Desktop:
 
         self.set_wallpaper()
 
-    def set_wallpaper_from_image(self, path_to_image):
+    def set_wallpaper_from_image(self, path_to_image: str):
         pass

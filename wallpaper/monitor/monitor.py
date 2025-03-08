@@ -13,7 +13,7 @@ from wallpaper.filters.wallpaper_filter import WallpaperFilter
 from wallpaper.geom.point import Point
 from wallpaper.geom.rect import Rect
 from wallpaper.geom.size import Size
-from wallpaper.tools.directory_tools import get_new_image, expand_dirs, choose_dir, flush_walls
+from wallpaper.tools.directory_tools import get_new_image, expand_dirs_lite, choose_dir_lite, flush_walls
 
 logger = logging.getLogger(__name__)
 
@@ -117,11 +117,12 @@ class Monitor:
         """
         self.config = config
         logger.info('Config is %s', self.config.__dict__)
-        self.dirs = expand_dirs(self.config.directories)
+        self.dirs = expand_dirs_lite(self.config.directories)
 
     def choose_dir(self, dirs):
         if not self.path or not self.config.single_folder_mode:
-            self.path = choose_dir(dirs)
+            self.path = choose_dir_lite(dirs)
+            logger.info('Path: %s', self.path)
         return self.path
 
     def put_image_at(self, image: Image.Image, position: Point, size: Size, sizer):
@@ -149,10 +150,6 @@ class Monitor:
             for image_filter in self.config.image_filters:
                 logger.info('Filter: %s', image_filter)
                 image = WallpaperFilter.get_filter(image_filter)(image, self, position)
-
-            if self.config.shadow_mode:
-                # image = shadow(image, self.bg_image, position)
-                pass
 
             if self.config.blending:
                 x, y = position

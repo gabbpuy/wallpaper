@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from typing import Sequence
+
 from AppKit import NSScreen, NSRect
 
 from wallpaper.monitor.monitor import Monitor
@@ -16,7 +17,7 @@ def NS_Rect_to_monitor_rect(ns_rect: NSRect) -> MonitorRect:
     return MonitorRect(*map(int, (x, y, x + ns_rect.size.width, y + ns_rect.size.height)))
 
 
-def get_monitors(*_args, **_kwargs):
+def get_monitors(*_args, **_kwargs) -> Sequence[Monitor]:
     """
     Find monitors
     """

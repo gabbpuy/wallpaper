@@ -6,6 +6,7 @@ import queue
 import sqlite3
 import threading
 from pickle import load, dump
+from typing import Sequence
 
 from wallpaper.tools.dir_entry import DirEntry
 from wallpaper.tools.image_history import ImageHistory
@@ -17,7 +18,7 @@ osPath = os.path
 class _Cache(metaclass=ABCMeta):
 
     @abstractmethod
-    def get(self, path):
+    def get(self, path: str) -> str:
         pass
 
     @abstractmethod
@@ -25,11 +26,11 @@ class _Cache(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def update(self, path, files=None, **kwargs):
+    def update(self, path: str, files: Sequence[str] | None = None, **kwargs) -> str:
         pass
 
     @abstractmethod
-    def set(self, path, files):
+    def set(self, path: str, files: Sequence[str] | None) -> str:
         pass
 
 
@@ -69,13 +70,14 @@ class SQL_Cache(_Cache):
     def _db(self) -> sqlite3.Connection:
         return sqlite3.connect(self.dircache_db)
 
-    def count(self):
+    def count(self) -> int:
         db = self._db()
         cursor = db.cursor()
-        cursor.execute('SELECT COUNT(*) FROM dir_entries')
-        logging.error("Cache Entries: %d", cursor.fetchone()[0])
+        count = cursor.execute('SELECT COUNT(*) FROM dir_entries').fetchone()[0]
+        logging.error("Cache Entries: %d", count)
+        return count
 
-    def get(self, path):
+    def get(self, path: str) -> str:
         if path not in self.dir_cache:
             db = self._db()
             cursor = db.cursor()
@@ -93,7 +95,7 @@ class SQL_Cache(_Cache):
         SQL_Cache.CacheQueue.put(None)
         self.queue_thread.join()
 
-    def update(self, path, files=None, stat=os.stat):
+    def update(self, path: str, files=None, stat=os.stat):
         if self.get(path) and self.dir_cache[path].stat == int(stat(path).st_mtime):
             return path
         return self.set(path, files)
@@ -113,7 +115,7 @@ class SQL_Cache(_Cache):
                 """, (entry.stat, entry.path)
             )
 
-    def set(self, path, files):
+    def set(self, path: str, files: Sequence[str] | None):
         entry = DirEntry(path, files)
         self.dir_cache[path] = entry
         self.CacheQueue.put(entry)
@@ -124,7 +126,7 @@ class OnFileCache(_Cache):
     CacheLock = threading.RLock()
 
     def __init__(self):
-        self.directory_cache = {}
+        self.directory_cache: dict[str, DirEntry] = {}
         self.history = ImageHistory()
         self.changed = False
         if osPath.exists('dircache.txt'):
@@ -135,16 +137,16 @@ class OnFileCache(_Cache):
             except AttributeError:
                 pass
 
-    def get(self, path):
+    def get(self, path: str) -> DirEntry:
         return self.directory_cache.get(path)
 
     @locked(CacheLock)
-    def set(self, dire, files):
+    def set(self, dire: str, files: Sequence[str] | None) -> str:
         self.changed = True
         self.directory_cache[dire] = DirEntry(dire, files)
         return dire
 
-    def update(self, path, files=None, stat=os.stat):
+    def update(self, path: str, files: Sequence[str] | None = None, stat=os.stat) -> str:
         if path in self.directory_cache and self.directory_cache.get(path).stat == stat(path).st_mtime:
             return path
         return self.set(path, files)
@@ -160,19 +162,19 @@ class NullCache(_Cache):
     CacheLock = threading.RLock()
 
     def __init__(self):
-        self.directory_cache = {}
+        self.directory_cache: dict[str, DirEntry] = {}
         self.history = ImageHistory()
 
-    def get(self, path):
+    def get(self, path: str) -> DirEntry:
         return self.directory_cache.get(path)
 
     @locked(CacheLock)
-    def set(self, path, files):
+    def set(self, path: str, files: Sequence[str] | None) -> str:
         # self.directory_cache[path] = DirEntry(path, files)
         self.directory_cache[path] = DirEntry(path, None)
         return path
 
-    def update(self, path, files=None, stat=os.stat):
+    def update(self, path, files: Sequence[str] | None = None, stat=os.stat) -> str:
         if path in self.directory_cache and self.directory_cache.get(path).stat == stat(path).st_mtime:
             return path
         return self.set(path, files)
