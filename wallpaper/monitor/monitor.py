@@ -2,6 +2,7 @@
 import heapq
 import logging
 import random
+import threading
 from concurrent.futures import ThreadPoolExecutor
 from functools import total_ordering
 from typing import Generator, Union, Optional, List
@@ -24,6 +25,10 @@ class Monitor:
     """
     A monitor and its extents
     """
+
+    # Monitors on the same desktop share a single bg_image (unless stack_mode), so pasting
+    # into it must be serialized across all Monitor instances/threads, not just per-instance.
+    _bg_image_lock = threading.Lock()
 
     def __init__(self, monitor, physical, working, flags, monitorNumber):
         logger.info('__init__(%s, %s, %s, %s, %s)', monitor, physical, working, flags, monitorNumber)
@@ -151,13 +156,14 @@ class Monitor:
                 logger.info('Filter: %s', image_filter)
                 image = WallpaperFilter.get_filter(image_filter)(image, self, position)
 
-            if self.config.blending:
-                x, y = position
-                w, h = size
-                box = (x, y, x + w, y + h)
-                img1 = self.bg_image.crop(box)
-                image = Image.blend(img1, image, self.config.blend_ratio)
-            self.bg_image.paste(image, tuple(position), mask=image)
+            with self._bg_image_lock:
+                if self.config.blending:
+                    x, y = position
+                    w, h = size
+                    box = (x, y, x + w, y + h)
+                    img1 = self.bg_image.crop(box)
+                    image = Image.blend(img1, image, self.config.blend_ratio)
+                self.bg_image.paste(image, tuple(position), mask=image)
         except:
             logger.exception('put_image_at: %s', (image, position, size, sizer))
 

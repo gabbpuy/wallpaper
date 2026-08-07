@@ -57,7 +57,7 @@ class WallpaperConfig:
 
     def load(self, fp: IO):
         structure = json.load(fp)
-        self.global_config.update(structure['global_config'])
+        self.global_config.update(structure.get('global_config', {}))
         for k, v in structure.get('monitors', {}).items():
             monitor = MonitorConfig()
             monitor.update(self.global_config.__dict__)

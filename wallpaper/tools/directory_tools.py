@@ -74,6 +74,7 @@ def expand_dirs_lite(dirs):
         update = FileCache.update
     return dirs
 
+chosen = set()
 
 def get_new_image(directory: str, dont_want: set = None) -> Image.Image | None:
     """
@@ -84,6 +85,8 @@ def get_new_image(directory: str, dont_want: set = None) -> Image.Image | None:
     """
     if dont_want is None:
         dont_want = set()
+    dont_want = dont_want.union(chosen)
+
     files = FileCache.get(directory).files
     if files:
         with FileCache.history as cache:
@@ -97,6 +100,7 @@ def get_new_image(directory: str, dont_want: set = None) -> Image.Image | None:
                 idx = randint(0, len(available_files) - 1)
                 filename = available_files[idx]
                 cache.add_wall(filename)
+                chosen.add(filename)
                 try:
                     image = Image.open(filename)
                     image.draft('RGBA', image.size)

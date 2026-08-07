@@ -5,6 +5,7 @@ import pathlib
 import os
 import random
 import sys
+import tempfile
 
 if sys.platform == 'darwin':
     from wallpaper.desktop.osx_desktop import OSX_Desktop as Desktop
@@ -59,7 +60,7 @@ class Wallpaper:
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG, filename='/tmp/wallpaper.log')
+    logging.basicConfig(level=logging.DEBUG, filename=os.path.join(tempfile.gettempdir(), 'wallpaper.log'))
     pil_logger = logging.getLogger('PIL')
     pil_logger.setLevel(logging.ERROR)
     logging.info('Starting: %s', os.getcwd())

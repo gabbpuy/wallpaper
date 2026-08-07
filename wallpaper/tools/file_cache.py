@@ -47,8 +47,8 @@ class SQL_Cache(_Cache):
         self._create_cache_db()
 
     def _create_cache_db(self):
-        dircache_db = 'dircache.db'
-        if not osPath.exists(dircache_db):
+        self.dircache_db = 'dircache.db'
+        if not osPath.exists(self.dircache_db):
             self._create_cache_table()
 
     def _create_cache_table(self):
@@ -81,7 +81,7 @@ class SQL_Cache(_Cache):
         if path not in self.dir_cache:
             db = self._db()
             cursor = db.cursor()
-            cursor.execute('SELECT path, modified_time FROM dir_entries WHERE path = ?', (path,))
+            cursor.execute('SELECT directory, modified_time FROM dir_entries WHERE directory = ?', (path,))
             try:
                 r = cursor.fetchone()
                 if r:
@@ -166,6 +166,8 @@ class NullCache(_Cache):
         self.history = ImageHistory()
 
     def get(self, path: str) -> DirEntry:
+        if path not in self.directory_cache:
+            self.set(path, None)
         return self.directory_cache.get(path)
 
     @locked(CacheLock)
