@@ -1,1 +1,1 @@
-.\venv\Scripts\pyinstaller.exe .\wallpaper.spec
+.\.venv\Scripts\pyinstaller --clean .\wallpaper.spec

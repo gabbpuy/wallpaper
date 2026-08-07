@@ -1,3 +1,3 @@
 #!/bin/sh
 
-./venv/bin/pyinstaller ./wallpaper.spec
+./venv/bin/pyinstaller --clean ./wallpaper.spec

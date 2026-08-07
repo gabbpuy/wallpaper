@@ -1,0 +1,18 @@
+[project]
+name = "wallpaper"
+version = "3.1"
+description = "Desktop Wallpaper Creator"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pillow>=12.3.0",
+    "pyobjc==9.2 ; sys_platform == 'darwin'",
+    "pywin32 >= 306 ; sys_platform == 'win32'",
+    # "rembg[gpu] >= 2.0.53; sys_platform == 'win32'",
+    "future~=0.18.3",
+]
+
+[dependency-groups]
+dev = [
+    "pyinstaller>=6.21.0",
+]

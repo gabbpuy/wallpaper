@@ -1,5 +1,0 @@
-pillow>=11.1.0
-pyobjc==9.2 ; sys_platform == 'darwin'
-pywin32 >= 306 ; sys_platform == 'win32'
-# rembg[gpu] >= 2.0.53; sys_platform == 'win32'
-future~=0.18.3
